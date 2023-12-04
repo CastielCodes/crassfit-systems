@@ -574,7 +574,7 @@
             </button>
           </div>
           <div class="modal-body">
-            <form>
+            <form  id="studentForm">
               <div class="form-group">
                 <label for="admissionNumber">Admin_no</label>
                 <input type="text" class="form-control" id="admissionNumber" />
@@ -613,7 +613,7 @@
             >
               Close
             </button>
-            <button type="button" class="btn btn-primary">Save changes</button>
+            <button type="button" class="btn btn-primary" id="submitButton">Save changes</button>
           </div>
         </div>
       </div>
@@ -635,5 +635,44 @@
 
     <!-- Page level custom scripts -->
     <script src="js/demo/datatables-demo.js"></script>
+    <script>
+
+document.getElementById('submitButton').addEventListener('click', function() {
+ var admissionNumber = document.getElementById('admissionNumber').value;
+ var firstName = document.getElementById('firstName').value;
+ var lastName = document.getElementById('lastName').value;
+ var phoneNumber = document.getElementById('phoneNumber').value;
+ var hostel = document.getElementById('hostel').value;
+ var roomNumber = document.getElementById('roomNumber').value;
+ var schoolId = document.getElementById('schoolId').value;
+
+ var data = {
+   'admissionNumber': admissionNumber,
+   'firstName': firstName,
+   'lastName': lastName,
+   'phoneNumber': phoneNumber,
+   'hostel': hostel,
+   'roomNumber': roomNumber,
+   'schoolId': schoolId
+ };
+ 
+ fetch('http://127.0.0.1:5000/add_student', {
+   method: 'POST',
+   headers: {
+     'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log('Success:', data);
+  })
+  .catch((error) => {
+    console.error('Error:', error);
+  });
+});
+
+
+    </script>
   </body>
 </html>

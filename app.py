@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS, cross_origin
 import sqlite3
 
 DATABASE = 'database.db'
@@ -10,22 +11,30 @@ def get_db():
 
 app = Flask(__name__)
 app.debug = True
+CORS(app)
 
 @app.route("/add_student", methods=['POST'])
+@cross_origin()
 def add_record():
   data = request.get_json()
   conn = get_db()
   cursor = conn.cursor()
   cursor.execute(
       """
-      INSERT INTO STUDENTS (column1, column2)
-      VALUES (?, ?)
+      INSERT INTO STUDENT (ADMISSION_NUMBER,FIRST_NAME, LAST_NAME,PHONE_NUMBER,HOSTEL_ID,ROOM_ID,SCHOOL_ID)
+      VALUES (?, ?,?,?,?,?,?)
   """,
-      (data["field1"], data["field2"]),
+      (data['admissionNumber'],
+       data["firstName"],
+        data["lastName"],
+        data["phoneNumber"],
+        data["hostel"],
+        data["roomNumber"],
+        data["schoolId"]),
   )
   conn.commit()
   conn.close()
-  return "Record added successfully!"
+  return jsonify({"message":"Record added successfully!"})
 
 @app.route("/get_students", methods=['GET'])
 def get_students():
