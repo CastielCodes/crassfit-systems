@@ -49,7 +49,7 @@
           <div class="sidebar-brand-icon rotate-n-15">
             <i class="fas fa-laugh-wink"></i>
           </div>
-          <div class="sidebar-brand-text mx-3">ADMIN<sup>2</sup></div>
+          <div class="sidebar-brand-text mx-3">Crassfit</div>
         </a>
 
         <!-- Divider -->
@@ -453,7 +453,7 @@
                         <th>School id</th>
                       </tr>
                     </thead>
-                    <tfoot>
+                    <!-- <tfoot>
                       <tr>
                         <th>Admin_no</th>
                         <th>First Name</th>
@@ -463,27 +463,8 @@
                         <th>Room Number</th>
                         <th>School id</th>
                       </tr>
-                    </tfoot>
-                    <tbody>
-                      <tr>
-                        <td>21-0265</td>
-                        <td>Egesa</td>
-                        <td>W.O</td>
-                        <td>0720585414</td>
-                        <td>1</td>
-                        <td>A23</td>
-                        <td>Daystar</td>
-                      </tr>
-                      <tr>
-                        <td>21-0265</td>
-                        <td>Egesa</td>
-                        <td>W.O</td>
-                        <td>0720585414</td>
-                        <td>1</td>
-                        <td>A23</td>
-                        <td>Daystar</td>
-                      </tr>
-                    </tbody>
+                    </tfoot> -->
+                    <tbody></tbody>
                   </table>
                 </div>
               </div>
@@ -497,7 +478,7 @@
         <footer class="sticky-footer bg-white">
           <div class="container my-auto">
             <div class="copyright text-center my-auto">
-              <span>Copyright &copy; Your Website 2020</span>
+              <span>Copyright &copy; Crassfit System 2023</span>
             </div>
           </div>
         </footer>
@@ -551,7 +532,7 @@
       </div>
     </div>
 
-     <!-- Add Student Modal pop up-->
+    <!-- Add Student Modal pop up-->
     <div
       class="modal fade"
       id="studentModal"
@@ -574,7 +555,7 @@
             </button>
           </div>
           <div class="modal-body">
-            <form  id="studentForm">
+            <form id="studentForm">
               <div class="form-group">
                 <label for="admissionNumber">Admin_no</label>
                 <input type="text" class="form-control" id="admissionNumber" />
@@ -613,7 +594,9 @@
             >
               Close
             </button>
-            <button type="button" class="btn btn-primary" id="submitButton">Save changes</button>
+            <button type="button" class="btn btn-primary" id="submitButton">
+              Save changes
+            </button>
           </div>
         </div>
       </div>
@@ -636,43 +619,81 @@
     <!-- Page level custom scripts -->
     <script src="js/demo/datatables-demo.js"></script>
     <script>
+      document
+        .getElementById("submitButton")
+        .addEventListener("click", function () {
+          var admissionNumber =
+            document.getElementById("admissionNumber").value;
+          var firstName = document.getElementById("firstName").value;
+          var lastName = document.getElementById("lastName").value;
+          var phoneNumber = document.getElementById("phoneNumber").value;
+          var hostel = document.getElementById("hostel").value;
+          var roomNumber = document.getElementById("roomNumber").value;
+          var schoolId = document.getElementById("schoolId").value;
 
-document.getElementById('submitButton').addEventListener('click', function() {
- var admissionNumber = document.getElementById('admissionNumber').value;
- var firstName = document.getElementById('firstName').value;
- var lastName = document.getElementById('lastName').value;
- var phoneNumber = document.getElementById('phoneNumber').value;
- var hostel = document.getElementById('hostel').value;
- var roomNumber = document.getElementById('roomNumber').value;
- var schoolId = document.getElementById('schoolId').value;
+          var data = {
+            admissionNumber: admissionNumber,
+            firstName: firstName,
+            lastName: lastName,
+            phoneNumber: phoneNumber,
+            hostel: hostel,
+            roomNumber: roomNumber,
+            schoolId: schoolId,
+          };
 
- var data = {
-   'admissionNumber': admissionNumber,
-   'firstName': firstName,
-   'lastName': lastName,
-   'phoneNumber': phoneNumber,
-   'hostel': hostel,
-   'roomNumber': roomNumber,
-   'schoolId': schoolId
- };
- 
- fetch('http://127.0.0.1:5000/add_student', {
-   method: 'POST',
-   headers: {
-     'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(data)
-  })
-  .then(response => response.json())
-  .then(data => {
-    console.log('Success:', data);
-  })
-  .catch((error) => {
-    console.error('Error:', error);
-  });
-});
+          fetch("http://127.0.0.1:5000/add_student", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              console.log("Success:", data);
+              alert(JSON.stringify(data));
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+              alert("An error occurred: " + error);
+            });
+        });
+    </script>
 
-
+    <script>
+      window.onload = function () {
+        fetch("http://127.0.0.1:5000/get_students")
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            const table = document.getElementById("dataTable");
+            data.forEach((item) => {
+              console.log(item);
+              const row = table.insertRow(-1);
+              const cell1 = row.insertCell(0);
+              const cell2 = row.insertCell(1);
+              const cell3 = row.insertCell(2);
+              const cell4 = row.insertCell(3);
+              const cell5 = row.insertCell(4);
+              const cell6 = row.insertCell(5);
+              const cell7 = row.insertCell(6);
+              cell1.innerHTML = item.ADMISSION_NUMBER;
+              cell2.innerHTML = item.FIRST_NAME;
+              cell3.innerHTML = item.LAST_NAME;
+              cell4.innerHTML = item.PHONE_NUMBER;
+              cell5.innerHTML = item.HOSTEL_ID;
+              cell6.innerHTML = item.ROOM_ID;
+              cell7.innerHTML = item.SCHOOL_ID;
+            });
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      };
     </script>
   </body>
 </html>
