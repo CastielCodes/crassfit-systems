@@ -434,7 +434,7 @@
                     width="100%"
                     cellspacing="0"
                   >
-                    <thead>
+                    <!-- <thead>
                       <tr>
                         <th>Hostel id</th>
                         <th>Hostel Name</th>
@@ -442,9 +442,7 @@
                         <th>Landlord ID</th>
                       </tr>
                     </thead>
-                    <tbody>
-                      
-                    </tbody>
+                    <tbody></tbody> -->
                     <tfoot>
                       <tr>
                         <th>Hostel id</th>
@@ -542,11 +540,8 @@
             </button>
           </div>
           <div class="modal-body">
-            <form>
-              <div class="form-group">
-                <label for="roomId">Room ID:</label>
-                <input type="text" class="form-control" id="roomId" />
-              </div>
+            <form id="hostelForm">
+
               <div class="form-group">
                 <label for="hostelId">Hostel ID:</label>
                 <input type="text" class="form-control" id="hostelId" />
@@ -564,16 +559,8 @@
                 <input type="text" class="form-control" id="landlordId" />
               </div>
               <div class="form-group">
-                <label for="status">Status:</label>
-                <input type="text" class="form-control" id="status" />
-              </div>
-              <div class="form-group">
-                <label for="price">Price:</label>
-                <input type="text" class="form-control" id="price" />
-              </div>
-              <div class="form-group">
-                <label for="roomNumber">Room Number:</label>
-                <input type="text" class="form-control" id="roomNumber" />
+                <label for="roomNumber">Number of students:</label>
+                <input type="number" class="form-control" id="numberofStudents" />
               </div>
               <div class="form-group">
                 <label for="schoolId">School id:</label>
@@ -589,7 +576,13 @@
             >
               Close
             </button>
-            <button type="button" class="btn btn-primary">Save changes</button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              id="submitHostelButton"
+            >
+              Save changes
+            </button>
           </div>
         </div>
       </div>
@@ -608,6 +601,74 @@
     <!-- Page level plugins -->
     <script src="vendor/datatables/jquery.dataTables.min.js"></script>
     <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
+
+    <script>
+      window.onload = function () {
+        fetch("http://127.0.0.1:5000/get_hostels")
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            const table = document.getElementById("dataTable");
+            data.forEach((item) => {
+              const row = table.insertRow(-1);
+              const cell1 = row.insertCell(0);
+              const cell2 = row.insertCell(1);
+              const cell3 = row.insertCell(2);
+              const cell4 = row.insertCell(3);
+              cell1.innerHTML = item.HOSTEL_ID;
+              cell2.innerHTML = item.HOSTEL_NAME;
+              cell3.innerHTML = item.NO_OF_ROOMS;
+              cell4.innerHTML = item.LANDLORD_ID;
+            });
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      };
+    </script>
+
+    <script>
+      document
+        .getElementById("submitHostelButton")
+        .addEventListener("click", function () {
+          var hostelId = document.getElementById("hostelId").value;
+          var hostelName = document.getElementById("hostelName").value;
+          var numberOfRooms = document.getElementById("numberOfRooms").value;
+          var landlordId = document.getElementById("landlordId").value;
+          var numberofStudents = document.getElementById("numberofStudents").value;
+          var schoolId = document.getElementById("schoolId").value;
+
+          var data = {
+            hostelId: hostelId,
+            hostelName: hostelName,
+            numberOfRooms: numberOfRooms,
+            landlordId: landlordId,
+            numberofStudents: numberofStudents,
+            schoolId: schoolId,
+          };
+
+          fetch("http://127.0.0.1:5000/add_hostel", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              console.log("Success:", data);
+              alert(JSON.stringify(data));
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+              alert("An error occurred: " + error);
+            });
+        });
+    </script>
 
     <!-- Page level custom scripts -->
     <script src="js/demo/datatables-demo.js"></script>
