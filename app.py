@@ -264,3 +264,44 @@ def add_staff():
         conn.close()
     return jsonify({"message": message})
 
+
+
+@app.route("/get_landlords", methods=["GET"])
+def get_landlords():
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM LANDLORD")
+    landlords = [dict(row) for row in cursor.fetchall()]
+    conn.close()
+    return jsonify(landlords)
+
+@app.route("/add_landlord", methods=["POST"])
+@cross_origin()
+def add_landlord():
+    data = request.get_json()
+    conn = get_db()
+    cursor = conn.cursor()
+    try:
+        cursor.execute(
+            """
+            INSERT INTO LANDLORD (LANDLORD_ID, FIRST_NAME, LAST_NAME, PHONE_NUMBER, NATIONAL_ID)
+            VALUES (?, ?, ?, ?, ?)
+            """,
+            (
+                data["landlordId"],
+                data["firstName"],
+                data["lastName"],
+                data["phoneNumber"],
+                data["nationalId"],
+                
+            ),
+        )
+        conn.commit()
+        message = "Record added successfully!"
+    except sqlite3.Error as e:
+        message = f"Database error: {e}"
+    except Exception as e:
+        message = f"Exception in _query: {e}"
+    finally:
+        conn.close()
+    return jsonify({"message": message})
