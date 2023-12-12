@@ -177,3 +177,90 @@ def add_room():
   finally:
       conn.close()
   return jsonify({"message": message})
+
+
+
+@app.route("/get_schools", methods=["GET"])
+def get_schools():
+  conn = get_db()
+  cursor = conn.cursor()
+  cursor.execute("SELECT * FROM SCHOOL")
+  rooms = [dict(row) for row in cursor.fetchall()]
+  conn.close()
+  return jsonify(rooms)
+
+
+@app.route("/add_school", methods=["POST"])
+@cross_origin()
+def add_school():
+ data = request.get_json()
+ conn = get_db()
+ cursor = conn.cursor()
+ try:
+     cursor.execute(
+         """
+     INSERT INTO SCHOOL (SCHOOL_ID,SCHOOL_NAME,NO_OF_STAFF,NO_OF_STUDENTS,SCHOOL_LOCATION)
+     VALUES (?, ?,?,?,?)
+ """,
+         (
+             data["schoolId"],
+             data["schoolName"],
+             data["staffNumber"],
+             data["studentNumber"],
+             data["location"],
+         ),
+     )
+     conn.commit()
+     message = "Record added successfully!"
+ except sqlite3.Error as e:
+     message = f"Database error: {e}"
+ except Exception as e:
+     message = f"Exception in _query: {e}"
+ finally:
+     conn.close()
+ return jsonify({"message": message})
+
+
+
+
+@app.route("/get_staff", methods=["GET"])
+def get_staff():
+  conn = get_db()
+  cursor = conn.cursor()
+  cursor.execute("SELECT * FROM STAFF")
+  rooms = [dict(row) for row in cursor.fetchall()]
+  conn.close()
+  return jsonify(rooms)
+
+
+
+@app.route("/add_staff", methods=["POST"])
+@cross_origin()
+def add_staff():
+    data = request.get_json()
+    conn = get_db()
+    cursor = conn.cursor()
+    try:
+        cursor.execute(
+            """
+            INSERT INTO STAFF (STAFF_NUMBER, FIRST_NAME, LAST_NAME, STAFF_POSITION, SCHOOL_ID)
+            VALUES (?, ?, ?, ?, ?)
+            """,
+            (
+                data["staffNo"],
+                data["firstName"],
+                data["lastName"],
+                data["position"],
+                data["schoolId"],
+            ),
+        )
+        conn.commit()
+        message = "Record added successfully!"
+    except sqlite3.Error as e:
+        message = f"Database error: {e}"
+    except Exception as e:
+        message = f"Exception in _query: {e}"
+    finally:
+        conn.close()
+    return jsonify({"message": message})
+

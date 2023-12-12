@@ -433,25 +433,11 @@
                     width="100%"
                     cellspacing="0"
                   >
-                    <thead>
-                      <tr>
-                        <th>Staff no</th>
-                        <th>First Name</th>
-                        <th>Last Name</th>
-                        <th>Phone number</th>
-                        <th>National ID</th>
-                        <th>School id</th>
-                        <th>Position</th>
-                      </tr>
-                    </thead>
-                    <tbody></tbody>
                     <tfoot>
                       <tr>
                         <th>Staff no</th>
                         <th>First Name</th>
                         <th>Last Name</th>
-                        <th>Phone number</th>
-                        <th>National ID</th>
                         <th>School id</th>
                         <th>Position</th>
                       </tr>
@@ -484,45 +470,6 @@
       <i class="fas fa-angle-up"></i>
     </a>
 
-    <!-- Logout Modal-->
-    <div
-      class="modal fade"
-      id="logoutModal"
-      tabindex="-1"
-      role="dialog"
-      aria-labelledby="exampleModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-            <button
-              class="close"
-              type="button"
-              data-dismiss="modal"
-              aria-label="Close"
-            >
-              <span aria-hidden="true">×</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            Select "Logout" below if you are ready to end your current session.
-          </div>
-          <div class="modal-footer">
-            <button
-              class="btn btn-secondary"
-              type="button"
-              data-dismiss="modal"
-            >
-              Cancel
-            </button>
-            <a class="btn btn-primary" href="login.html">Logout</a>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <div
       class="modal fade"
       id="roomModal"
@@ -545,7 +492,7 @@
             </button>
           </div>
           <div class="modal-body">
-            <form>
+            <form id="staffForm">
               <div class="form-group">
                 <label for="staffNo">Staff no:</label>
                 <input type="text" class="form-control" id="staffNo" />
@@ -557,10 +504,6 @@
               <div class="form-group">
                 <label for="lastName">Last Name:</label>
                 <input type="text" class="form-control" id="lastName" />
-              </div>
-              <div class="form-group">
-                <label for="phoneNumber">Phone number:</label>
-                <input type="text" class="form-control" id="phoneNumber" />
               </div>
               <div class="form-group">
                 <label for="nationalId">National ID:</label>
@@ -584,7 +527,13 @@
             >
               Close
             </button>
-            <button type="button" class="btn btn-primary">Save changes</button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              id="submitStaffButton"
+            >
+              Save changes
+            </button>
           </div>
         </div>
       </div>
@@ -606,5 +555,75 @@
 
     <!-- Page level custom scripts -->
     <script src="js/demo/datatables-demo.js"></script>
+
+    <script>
+      window.onload = function () {
+        fetch("http://127.0.0.1:5000/get_staff")
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            const table = document.getElementById("dataTable");
+            data.forEach((item) => {
+              const row = table.insertRow(-1);
+              const cell1 = row.insertCell(0);
+              const cell2 = row.insertCell(1);
+              const cell3 = row.insertCell(2);
+              const cell4 = row.insertCell(3);
+              const cell5 = row.insertCell(4);
+              cell1.innerHTML = item.STAFF_NUMBER;
+              cell2.innerHTML = item.FIRST_NAME;
+              cell3.innerHTML = item.LAST_NAME;
+              cell4.innerHTML = item.SCHOOL_ID;
+              cell5.innerHTML = item.STAFF_POSITION;
+            });
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      };
+    </script>
+
+    <script>
+      document
+        .getElementById("submitStaffButton")
+        .addEventListener("click", function () {
+          var staffNo = document.getElementById("staffNo").value;
+          var firstName = document.getElementById("firstName").value;
+          var lastName = document.getElementById("lastName").value;
+          var nationalId = document.getElementById("nationalId").value;
+          var schoolId = document.getElementById("schoolId").value;
+          var position = document.getElementById("position").value;
+
+          var data = {
+            staffNo: staffNo,
+            firstName: firstName,
+            lastName: lastName,
+            nationalId: nationalId,
+            schoolId: schoolId,
+            position: position,
+          };
+
+          fetch("http://127.0.0.1:5000/add_staff", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              console.log("Success:", data);
+              alert(JSON.stringify(data));
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+              alert("An error occurred: " + error);
+            });
+        });
+    </script>
   </body>
 </html>

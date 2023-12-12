@@ -433,30 +433,15 @@
                     width="100%"
                     cellspacing="0"
                   >
-                    <thead>
-                      <tr>
-                        <th>School_ID</th>
-                        <th>School Name</th>
-                        <th>School Name</th>
-                        <th>Staff number</th>
-                        <th>Student Number</th>
-                        <th>Location</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-
-                    </tbody>
                     <tfoot>
                       <tr>
                         <th>School_ID</th>
                         <th>School Name</th>
-                        <th>School Name</th>
-                        <th>Staff number</th>
+                        <th>Staff Number</th>
                         <th>Student Number</th>
                         <th>Location</th>
                       </tr>
                     </tfoot>
-                    
                   </table>
                 </div>
               </div>
@@ -485,45 +470,6 @@
       <i class="fas fa-angle-up"></i>
     </a>
 
-    <!-- Logout Modal-->
-    <div
-      class="modal fade"
-      id="logoutModal"
-      tabindex="-1"
-      role="dialog"
-      aria-labelledby="exampleModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-            <button
-              class="close"
-              type="button"
-              data-dismiss="modal"
-              aria-label="Close"
-            >
-              <span aria-hidden="true">×</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            Select "Logout" below if you are ready to end your current session.
-          </div>
-          <div class="modal-footer">
-            <button
-              class="btn btn-secondary"
-              type="button"
-              data-dismiss="modal"
-            >
-              Cancel
-            </button>
-            <a class="btn btn-primary" href="login.html">Logout</a>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <div
       class="modal fade"
       id="roomModal"
@@ -546,7 +492,7 @@
             </button>
           </div>
           <div class="modal-body">
-            <form>
+            <form id="schoolForm">
               <div class="form-group">
                 <label for="schoolId">School_ID:</label>
                 <input type="text" class="form-control" id="schoolId" />
@@ -577,7 +523,13 @@
             >
               Close
             </button>
-            <button type="button" class="btn btn-primary">Save changes</button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              id="submitSchoolButton"
+            >
+              Save changes
+            </button>
           </div>
         </div>
       </div>
@@ -599,5 +551,75 @@
 
     <!-- Page level custom scripts -->
     <script src="js/demo/datatables-demo.js"></script>
+
+
+    <script>
+
+      window.onload = function () {
+        fetch("http://127.0.0.1:5000/get_schools")
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            const table = document.getElementById("dataTable");
+            data.forEach((item) => {
+              const row = table.insertRow(-1);
+              const cell1 = row.insertCell(0);
+              const cell2 = row.insertCell(1);
+              const cell3 = row.insertCell(2);
+              const cell4 = row.insertCell(3);
+              const cell5 = row.insertCell(4);
+              cell1.innerHTML = item.SCHOOL_ID;
+              cell2.innerHTML = item.SCHOOL_NAME;
+              cell3.innerHTML = item.NO_OF_STAFF;
+              cell4.innerHTML = item.NO_OF_STUDENTS;
+              cell5.innerHTML = item.SCHOOL_LOCATION;
+            });
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      };
+
+    </script>
+    <script>
+      document
+        .getElementById("submitSchoolButton")
+        .addEventListener("click", function () {
+          var schoolId = document.getElementById("schoolId").value;
+          var schoolName = document.getElementById("schoolName").value;
+          var staffNumber = document.getElementById("staffNumber").value;
+          var studentNumber = document.getElementById("studentNumber").value;
+          var location = document.getElementById("location").value;
+
+          var data = {
+            schoolId: schoolId,
+            schoolName: schoolName,
+            staffNumber: staffNumber,
+            studentNumber: studentNumber,
+            location: location,
+          };
+
+          fetch("http://127.0.0.1:5000/add_school", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              console.log("Success:", data);
+              alert(JSON.stringify(data));
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+              alert("An error occurred: " + error);
+            });
+        });
+    </script>
   </body>
 </html>
