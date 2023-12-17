@@ -305,3 +305,19 @@ def add_landlord():
     finally:
         conn.close()
     return jsonify({"message": message})
+
+
+@app.route("/home_endpoint", methods=["GET"])
+def home_endpoint():
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("SELECT COUNT(*) FROM ROOM")
+    rooms = cursor.fetchone()[0]
+    cursor.execute("SELECT COUNT(*) FROM HOSTEL")
+    hostels = cursor.fetchone()[0]
+    cursor.execute("SELECT COUNT(*) FROM STUDENT")
+    students = cursor.fetchone()[0]
+    cursor.execute("SELECT COUNT(*) FROM LANDLORD")
+    landlords = cursor.fetchone()[0]
+    conn.close()
+    return jsonify({"rooms": rooms, "hostels": hostels, "students": students, "landlords": landlords})
